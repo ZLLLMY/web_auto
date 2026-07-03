@@ -1,0 +1,44 @@
+# 📦 Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# 🧪 PyTest cache
+.pytest_cache/
+.cache/
+
+# 🐍 Virtual environments
+env/
+venv/
+.venv/
+ENV/
+
+# 📝 IDE-specific (PyCharm)
+.idea/
+
+# 📁 Generated folders (Should NOT be tracked)
+logs/
+reports/
+screenshots/
+allure-results/
+allure-report/
+
+# 🔐 Secrets or env-specific overrides (optional)
+*.env
+*.yaml
+*.yml
+
+# 🧪 Test output and coverage
+*.log
+*.cover
+coverage.xml
+htmlcov/
+
+# 🖼️ OS files
+.DS_Store
+Thumbs.db
+
+# 📄 Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
