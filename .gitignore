@@ -17,16 +17,18 @@ ENV/
 # 📝 IDE-specific (PyCharm)
 .idea/
 
-# 📁 Generated folders (Should NOT be tracked)
-logs/
-reports/
-screenshots/
+# 📁 Generated folders (keep structure via .gitkeep, ignore runtime outputs)
+logs/*
+!logs/.gitkeep
+reports/*
+!reports/.gitkeep
+screenshots/*
+!screenshots/.gitkeep
 allure-results/
 allure-report/
 
 # 🔐 Secrets or env-specific overrides (optional)
 *.env
-*.yaml
 *.yml
 
 # 🧪 Test output and coverage
@@ -42,3 +44,6 @@ Thumbs.db
 # 📄 Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+
+taobao_cookies.txt
+configfiles/QA_config.yaml
