@@ -52,8 +52,8 @@ A modular, scalable, and ready-to-use **Test Automation Framework** built with *
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/Web_Automation_Framework(Py-PyTest).git
-cd Web_Automation_Framework(Py-PyTest)
+git clone https://github.com/ZLLLMY/web_auto.git
+cd web_auto
 ```
 ### 2. Run Setup Script (Windows)
 ```bash
@@ -68,19 +68,39 @@ pip install -r requirements.txt
 
 # 🧪 Useful Commands
 
-| Command                                  | Description                            |
-|------------------------------------------|----------------------------------------|
-| `python Runner.py`                       | Run all test cases                     |
-| `python Runner.py -m smoke`              | Run only test which is marked as smoke |
-| `python Runner.py --browser_name=chrome` | Run with Chrome browser                |
-| `python Runner.py --env=qa`              | Load QA environment configs            |
-| `python Runner.py -k <keyword>`          | Run only test which is keyword match   |
-| `python Runner.py -r "4"`                | Run the test for 4 times               |
+## 🛒 淘宝测试（默认 QA 环境）
+
+| Command | Description |
+|---------|-------------|
+| `python Runner.py` | 运行所有测试用例 |
+| `python Runner.py -m taobao` | 只运行淘宝相关测试（登录、搜索、完整流程） |
+| `python Runner.py -m smoke` | 只运行冒烟测试（快速验证核心功能） |
+| `python Runner.py -k taobao_login` | 只运行淘宝登录测试 |
+| `python Runner.py -k taobao_search` | 只运行淘宝搜索测试 |
+| `python Runner.py -k taobao_full_flow` | 只运行淘宝完整流程（登录→搜索→加购） |
+| `python Runner.py --env=QA` | 加载 QA 环境配置（淘宝线上环境） |
+| `python Runner.py --env=dev` | 加载 dev 环境配置（开发/练习环境） |
+| `python Runner.py --browser_name=chrome` | 使用 Chrome 浏览器运行 |
+| `python Runner.py --browser_name=firefox` | 使用 Firefox 浏览器运行 |
+| `python Runner.py -r "3"` | 所有测试重复运行 3 次 |
+| `python Runner.py -m taobao -r "2"` | 淘宝测试重复运行 2 次 |
+
+## 🔧 组合示例
+
+```bash
+# 淘宝完整流程 + QA 环境 + Chrome 浏览器 + 重复2次
+python Runner.py -k taobao_full_flow --env=QA --browser_name=chrome -r "2"
+
+# 所有淘宝标记用例 + Firefox 浏览器
+python Runner.py -m taobao --browser_name=firefox
+
+# 冒烟测试 + dev 环境
+python Runner.py -m smoke --env=dev
+```
 
 ---
 
 # 👤 Author
-**Ramanan Ramasamy**  
-📍 Bengaluru, India  
-🔗 https://www.linkedin.com/in/ramanan-ramasamy/  
-💼 QA AUTOMATION Engineer | PYTHON | FULL STACK QA ENGINEER
+**张龙龙**  
+📍 中国河南省周口市  
+💼 测试工程师 | 测试开发工程师 | Python
