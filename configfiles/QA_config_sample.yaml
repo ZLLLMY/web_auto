@@ -1,0 +1,42 @@
+# =============================================================================
+# 🐧 淘宝自动化测试 —— 环境配置文件（示例模板）
+# =============================================================================
+#
+# 📖 使用方式：
+#   1. 复制此文件并重命名为 {env}_config.yaml（例如 QA_config.yaml / dev_config.yaml）
+#   2. 将占位符替换为你的真实信息
+#   3. 运行时通过 --env 参数指定环境：
+#         python Runner.py --env=QA       → 加载 configfiles/QA_config.yaml
+#         python Runner.py --env=dev      → 加载 configfiles/dev_config.yaml
+#
+# ⚠️ 安全提醒：
+#   真实的 {env}_config.yaml 已被 .gitignore 忽略，切勿将包含密码/cookie的文件提交到Git！
+# =============================================================================
+
+# 🌐 环境名称（QA / dev / staging / prod 等）
+env: QA
+
+# 🔗 各站点URL配置
+# 淘宝/天猫主站（被测站点）
+base_url: "https://www.taobao.com"
+
+# LetCode 练习站点（用于 input 字段验证等基础测试）
+letcode_url: "https://letcode.in/"
+
+# SauceDemo 练习站点（用于登录流程等标准验证）
+sauseLab_url: "https://www.saucedemo.com/"
+
+# 👤 登录凭证（淘宝账号）
+# 注意：真实文件中的手机号和密码请勿提交到Git！
+username: "your_phone_number_here"
+password: "your_password_here"
+
+# 🖥️ 浏览器相关配置（可选扩展字段）
+# browser: "chrome"           # chrome / firefox / edge
+# headless: false             # 是否无头模式运行
+# implicit_wait: 10           # 隐式等待时间（秒）
+
+# 📁 目录路径（可选扩展字段，通常使用 conftest.py 中的默认值即可）
+# screenshot_dir: "screenshots"
+# log_dir: "logs"
+# report_dir: "reports"

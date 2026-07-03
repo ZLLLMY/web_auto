@@ -1,0 +1,4 @@
+env: dev
+base_url: "https://dev.example.com"
+username: "devuser"
+password: "devpass"
