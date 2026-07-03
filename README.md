@@ -102,5 +102,5 @@ python Runner.py -m smoke --env=dev
 
 # 👤 Author
 **张龙龙**  
-📍 中国河南省周口市  
+📍 中国  
 💼 测试工程师 | 测试开发工程师 | Python
