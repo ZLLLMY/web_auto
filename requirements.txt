@@ -4,3 +4,4 @@ pytest-html
 allure-pytest
 pyyaml
 pytest-repeat
+requests

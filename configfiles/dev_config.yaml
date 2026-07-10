@@ -2,3 +2,18 @@ env: dev
 base_url: "https://dev.example.com"
 username: "devuser"
 password: "devpass"
+
+feishu:
+  enabled: false
+  webhook_url: ""
+  send_mode: "on_failure"          # "always" | "on_failure" | "never"
+
+email:
+  enabled: false                                                 # 设为 true 启用邮件发送
+  send_mode: "on_failure"                                       # "always" | "on_failure" | "never"
+  smtp_server: "smtp.qq.com"
+  smtp_port: 465
+  sender: "your_email@qq.com"
+  password: "your_authorization_code"                            # 邮箱授权码（非登录密码）
+  receivers:
+    - "receiver@example.com"

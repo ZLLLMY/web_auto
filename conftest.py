@@ -1,15 +1,22 @@
 import inspect
 import logging
 import os
+import time as time_module
 from datetime import datetime
 import allure
 import pytest
 import yaml
-import os
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.edge.options import Options as EdgeOptions
+
+from utilities.feishu_notifier import notify_test_result
+from utilities.email_sender import send_screenshots_email
+
+# 收集失败用例信息，供 pytest_sessionfinish 飞书通知使用
+_failed_cases = []
+SESSION_START_TIME = None
 
 driver = None
 
@@ -71,7 +78,7 @@ def load_config(request):
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"Configuration file not found: {config_path}")
 
-    with open(config_path, "r") as f:
+    with open(config_path, "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
     return config
 
@@ -82,6 +89,25 @@ def pytest_runtest_makereport(item, call):
     report = outcome.get_result()
 
     if report.when == "call" and report.failed:
+        # ---- 收集失败信息（给飞书通知用） ----
+        error_message = ""
+        if call.excinfo is not None:
+            ex = call.excinfo._excinfo if hasattr(call.excinfo, "_excinfo") else None
+            if ex is not None:
+                # ex is a tuple (type, value, traceback)
+                error_message = f"{ex[0].__name__}: {ex[1]}" if len(ex) >= 2 else str(call.excinfo)
+            else:
+                error_message = str(call.excinfo)
+        elif hasattr(report, "longreprtext"):
+            error_message = report.longreprtext.split("\n")[0]
+
+        _failed_cases.append({
+            "name": item.name,
+            "error_message": error_message,
+            "stage": report.when,
+        })
+
+        # ---- 原有截图逻辑 ----
         driver_instance = getattr(item.instance, "driver", None)
         if driver_instance:
             screenshot_folder = item.config.getoption("screenshot_dir")
@@ -100,9 +126,74 @@ def pytest_runtest_makereport(item, call):
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_sessionstart(session):
+    global SESSION_START_TIME
+    SESSION_START_TIME = time_module.time()
+
     env = session.config.getoption("--env")
     with open("reports/environment.properties", "w") as f:
         f.write(f"Environment={env}\n")
+
+
+@pytest.hookimpl(trylast=True)
+def pytest_sessionfinish(session):
+    """测试会话结束后，收集汇总信息并通过飞书发送通知。"""
+    global _failed_cases, SESSION_START_TIME
+
+    # ---- 计算耗时 ----
+    elapsed = time_module.time() - (SESSION_START_TIME or time_module.time())
+    minutes = int(elapsed // 60)
+    seconds = int(elapsed % 60)
+    duration_str = f"{minutes}分{seconds}秒" if minutes > 0 else f"{seconds}秒"
+
+    # ---- 收集通过/失败/跳过数量 ----
+    reporter = session.config.pluginmanager.get_plugin("terminalreporter")
+    stats = getattr(reporter, "stats", {}) if reporter else {}
+
+    passed = len(stats.get("passed", []))
+    failed = len(stats.get("failed", []))
+    skipped = len(stats.get("skipped", []))
+    total = passed + failed + skipped
+
+    # ---- 通过用例名列表 ----
+    passed_names = []
+    for item in stats.get("passed", []):
+        name = getattr(item, "name", None) or item.nodeid.split("::")[-1]
+        passed_names.append(name)
+
+    # ---- 读取配置 ----
+    env_name = session.config.getoption("--env", default="qa")
+    browser_name = session.config.getoption("browser_name", default="chrome")
+    screenshot_dir = session.config.getoption("screenshot_dir", default="")
+    timestamp_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # ---- 构建测试摘要 ----
+    test_summary = {
+        "total": total,
+        "passed": passed,
+        "failed": failed,
+        "skipped": skipped,
+        "duration_str": duration_str,
+        "failed_cases": _failed_cases,
+        "passed_names": passed_names,
+        "env_name": env_name,
+        "browser_name": browser_name,
+        "timestamp_str": timestamp_str,
+        "screenshot_dir": screenshot_dir,
+    }
+
+    # ---- 加载飞书配置并发送 ----
+    config_path = os.path.join(os.getcwd(), "configfiles", f"{env_name}_config.yaml")
+    feishu_config = {}
+    if os.path.exists(config_path):
+        with open(config_path, "r", encoding="utf-8") as f:
+            full_config = yaml.safe_load(f)
+        feishu_config = full_config.get("feishu", {})
+
+    notify_test_result(feishu_config, test_summary)
+
+    # ---- 加载邮箱配置并发送截图 ----
+    email_config = full_config.get("email", {})
+    send_screenshots_email(email_config, test_summary)
 
 def capture_screenshot(request):
     """Capture screenshot manually."""
