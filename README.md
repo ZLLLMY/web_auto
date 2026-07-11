@@ -25,6 +25,8 @@ A modular, scalable, and ready-to-use **Test Automation Framework** built with *
 - 🧪 **Custom Pytest Hooks** for enhanced test control
 - 📁 **Timestamped Reports & Screenshots** for each run
 - 🧹 **Clean Folder Structure** for easy navigation and scalability
+- 💬 **飞书通知** — 测试结束后自动推送汇总消息卡片到飞书群
+- 📧 **邮件通知** — 失败截图自动打包 ZIP 发送到指定邮箱（附 HTML 报告）
 
 ---
 
@@ -97,6 +99,52 @@ python Runner.py -m taobao --browser_name=firefox
 # 冒烟测试 + dev 环境
 python Runner.py -m smoke --env=dev
 ```
+
+---
+
+# 🔔 通知配置
+
+测试结束后自动推送结果到飞书群和邮箱。配置文件：`configfiles/QA_config.yaml`
+
+## 飞书
+
+```yaml
+feishu:
+  enabled: true
+  webhook_url: "https://open.feishu.cn/open-apis/bot/v2/hook/xxxxx"
+  send_mode: "always"          # "always" | "on_failure" | "never"
+```
+
+| 字段 | 说明 |
+|---|---|
+| `enabled` | `true` 启用 / `false` 关闭 |
+| `webhook_url` | 飞书群自定义机器人 Webhook 地址 |
+| `send_mode` | `always` 始终发送 / `on_failure` 仅失败发送 / `never` 关闭 |
+
+> 获取 Webhook：飞书群 → 设置 → 群机器人 → 添加自定义机器人 → 复制 Webhook 地址
+
+## 邮箱
+
+```yaml
+email:
+  enabled: true
+  send_mode: "always"           # "always" | "on_failure" | "never"
+  smtp_server: "smtp.qq.com"
+  smtp_port: 465
+  sender: "your_email@qq.com"
+  password: "your_authorization_code"
+  receivers:
+    - "receiver@qq.com"
+```
+
+| 字段 | 说明 |
+|---|---|
+| `enabled` | `true` 启用 / `false` 关闭 |
+| `send_mode` | `always` 始终发送 / `on_failure` 仅失败发送 / `never` 关闭 |
+| `password` | QQ邮箱 **授权码**（非登录密码），在 QQ邮箱设置 → 账户 → POP3/SMTP 中获取 |
+| `receivers` | 接收报告的邮箱列表，可以填多个 |
+
+> 全通过时只发 HTML 报告，失败时附带截图 ZIP 附件。
 
 ---
 
